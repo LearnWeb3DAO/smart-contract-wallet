@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SCW {
+  id Int @id @default(autoincrement())
+
+  address    String   @unique
+  signers    String[] @default([])
+  isDeployed Boolean  @default(false)
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  scwId Int
+  scw   SCW @relation(fields: [scwId], references: [id])
+
+  signatures TransactionSignature[]
+}
+
+model TransactionSignature {
+  id Int @id @default(autoincrement())
+
+  transactionId Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  signerAddress String
+  signature     String
+}
