@@ -1,11 +1,15 @@
 "use client";
-import CreateSCW from "@/components/createSCW";
+
+import WalletList from "@/components/walletList";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
+import { Fragment } from "react";
 import { useAccount } from "wagmi";
 
 export default function Home() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+
+  if (!isConnected || !address) return null;
 
   return (
     <main className="flex flex-col h-screen">
@@ -13,8 +17,16 @@ export default function Home() {
         <ConnectButton />
       </div>
 
-      <div className="flex flex-col h-full justify-center items-center">
-        {isConnected && <Link href="/create-wallet">Create Wallet</Link>}
+      <div className="flex flex-col h-full gap-6 justify-center items-center">
+        <Fragment>
+          <WalletList address={address} />
+          <Link
+            href="/create-wallet"
+            className="px-4 py-2 bg-blue-500 transition-colors hover:bg-blue-600 rounded-lg"
+          >
+            Create Wallet
+          </Link>
+        </Fragment>
       </div>
     </main>
   );

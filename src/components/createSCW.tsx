@@ -3,12 +3,13 @@ import { use, useEffect, useRef, useState } from "react";
 import Button from "./button";
 import { useAccount } from "wagmi";
 import { isAddress } from "viem";
+import { useRouter } from "next/navigation";
 
 export default function CreateSCW() {
   const { address } = useAccount();
+  const router = useRouter();
 
   const [signers, setSigners] = useState<string[]>([]);
-
   const lastInput = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -21,13 +22,27 @@ export default function CreateSCW() {
     }
   }, [signers]);
 
-  const onCreateSCW = () => {
+  const onCreateSCW = async () => {
     try {
       signers.forEach((signer) => {
         if (isAddress(signer) === false) {
           throw new Error(`Invalid address: ${signer}`);
         }
       });
+
+      const response = await fetch("/api/create-wallet", {
+        method: "POST",
+        body: JSON.stringify({ signers }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      window.alert(`Wallet created: ${data.address}`);
+      router.push(`/`);
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {

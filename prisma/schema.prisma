@@ -10,22 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model SCW {
+model Wallet {
   id Int @id @default(autoincrement())
 
   address    String   @unique
   signers    String[] @default([])
   isDeployed Boolean  @default(false)
 
+  salt         String
   transactions Transaction[]
 }
 
 model Transaction {
   id Int @id @default(autoincrement())
 
-  scwId Int
-  scw   SCW @relation(fields: [scwId], references: [id])
+  walletId Int
+  wallet   Wallet @relation(fields: [walletId], references: [id])
 
+  txHash     String?
   signatures TransactionSignature[]
 }
 
