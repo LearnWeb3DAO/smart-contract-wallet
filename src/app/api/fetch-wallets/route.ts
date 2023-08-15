@@ -1,4 +1,4 @@
-import { prisma } from "@/db";
+import { prisma } from "@/utils/db";
 import { isAddress } from "ethers/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const wallets = await prisma.wallet.findMany({
       where: {
         signers: {
-          has: address,
+          has: address.toLowerCase(),
         },
       },
       include: {

@@ -10,7 +10,6 @@ export default function WalletPage({
 }: {
   params: { walletAddress: string };
 }) {
-  console.log(`walletAddress is ${walletAddress}`);
   const { address: userAddress } = useAccount();
 
   const [toAddress, setToAddress] = useState("");

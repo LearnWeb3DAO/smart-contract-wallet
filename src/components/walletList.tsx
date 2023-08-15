@@ -16,7 +16,7 @@ export default function WalletList({ address }: { address: string }) {
     fetch(`/api/fetch-wallets?address=${address}`)
       .then((response) => response.json())
       .then((data) => setWallets(data));
-  }, []);
+  }, [address]);
 
   return (
     <main className="flex flex-col justify-center items-center  gap-5">

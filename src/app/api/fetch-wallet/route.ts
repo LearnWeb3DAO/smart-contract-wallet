@@ -1,4 +1,4 @@
-import { prisma } from "@/db";
+import { prisma } from "@/utils/db";
 import { isAddress } from "ethers/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 

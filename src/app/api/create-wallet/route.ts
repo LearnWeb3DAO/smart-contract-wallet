@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { walletFactoryContract } from "@/utils/getWalletFactoryContract";
-import { prisma } from "@/db";
+import { prisma } from "@/utils/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,10 +10,7 @@ export async function POST(req: NextRequest) {
 
     const salt = BigInt(`0x${random256Bits.toString("hex")}`);
 
-    const walletAddress = await walletFactoryContract.getFunction("getAddress")(
-      signers,
-      salt
-    );
+    const walletAddress = await walletFactoryContract.getAddress(signers, salt);
 
     const response = await prisma.wallet.create({
       data: {
