@@ -1,9 +1,9 @@
 "use client";
-import { use, useEffect, useRef, useState } from "react";
-import Button from "./button";
-import { useAccount } from "wagmi";
-import { isAddress } from "viem";
+import { isAddress } from "ethers/lib/utils";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useAccount } from "wagmi";
+import Button from "./button";
 
 export default function CreateSCW() {
   const { address } = useAccount();

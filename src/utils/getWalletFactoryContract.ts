@@ -1,14 +1,12 @@
-import { WALLET_FACTORY_ABI, WALLET_FACTORY_ADDRESS } from "@/constants";
-import { createPublicClient, getContract, http } from "viem";
-import { goerli } from "viem/chains";
+import { Contract, providers } from "ethers";
+import { WALLET_FACTORY_ADDRESS, WALLET_FACTORY_ABI } from "./constants";
 
-const publicClient = createPublicClient({
-  chain: goerli,
-  transport: http(),
-});
+export const RPC_URL = "https://rpc.ankr.com/eth_goerli";
 
-export const walletFactoryContract = getContract({
-  address: WALLET_FACTORY_ADDRESS,
-  abi: WALLET_FACTORY_ABI,
-  publicClient,
-});
+export const provider = new providers.JsonRpcProvider(RPC_URL);
+
+export const walletFactoryContract = new Contract(
+  WALLET_FACTORY_ADDRESS,
+  WALLET_FACTORY_ABI,
+  provider
+);

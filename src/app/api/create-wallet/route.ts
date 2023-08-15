@@ -5,25 +5,20 @@ import { prisma } from "@/db";
 
 export async function POST(req: NextRequest) {
   try {
-    const { signers } = await req.json();
+    const { signers }: { signers: string[] } = await req.json();
     const random256Bits = randomBytes(32);
 
     const salt = BigInt(`0x${random256Bits.toString("hex")}`);
 
-    console.log({
+    const walletAddress = await walletFactoryContract.getFunction("getAddress")(
       signers,
-      salt,
-    });
-
-    const walletAddress = await walletFactoryContract.read.getAddress([
-      signers,
-      salt,
-    ]);
+      salt
+    );
 
     const response = await prisma.wallet.create({
       data: {
         salt: salt.toString(),
-        signers: signers,
+        signers: signers.map((s) => s.toLowerCase()),
         isDeployed: false,
         address: walletAddress,
       },
