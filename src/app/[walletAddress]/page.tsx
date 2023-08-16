@@ -1,4 +1,5 @@
 "use client";
+import TransactionsList from "@/components/transactionList";
 import { getUserOpForETHTransfer } from "@/utils/getUserOpFromETHTransfer";
 import getUserOpHash from "@/utils/getUserOpHash";
 import { parseEther } from "ethers/lib/utils";
@@ -31,7 +32,6 @@ export default function WalletPage({
         walletAddress,
         data.signers,
         data.salt,
-        [],
         toAddress,
         amountBigInt
       );
@@ -50,10 +50,9 @@ export default function WalletPage({
       const userOp = await fetchUserOp();
 
       if (!userOp) throw new Error("Could not fetch userOp");
-      console.log(userOp);
       const signedUserOpHash = await getUserOpHash(userOp);
       const signature = await walletClient?.signMessage({
-        message: signedUserOpHash,
+        message: { raw: signedUserOpHash as `0x${string}` },
       });
 
       const response = await fetch("/api/create-transaction", {
@@ -72,8 +71,10 @@ export default function WalletPage({
       if (data.error) {
         throw new Error(data.error);
       }
+
+      window.alert("Transaction created!");
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
   return (
@@ -104,6 +105,11 @@ export default function WalletPage({
       >
         Create Transaction
       </button>
+
+      <TransactionsList
+        address={userAddress! as string}
+        walletAdderss={walletAddress as string}
+      />
     </div>
   );
 }

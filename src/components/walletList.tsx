@@ -1,7 +1,6 @@
 import { Wallet } from "@prisma/client";
-import { useEffect, useState } from "react";
-import Button from "./button";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type WalletWithTxnsCount = Wallet & {
   _count: {

@@ -1,4 +1,3 @@
-import { BytesLike } from "ethers";
 import { defaultAbiCoder, keccak256 } from "ethers/lib/utils";
 import { Constants, IUserOperation } from "userop";
 import { goerli } from "wagmi/chains";
@@ -30,10 +29,9 @@ export default async function getUserOpHash(userOp: IUserOperation) {
       keccak256(userOp.paymasterAndData),
     ]
   );
-  console.log("is this okay?");
   const encodedUserOpWithChainIdAndEntryPoint = defaultAbiCoder.encode(
     ["bytes32", "address", "uint256"],
-    [keccak256(encodedUserOp), Constants.ERC4337.EntryPoint, BigInt(goerli.id)]
+    [keccak256(encodedUserOp), Constants.ERC4337.EntryPoint, goerli.id]
   );
 
   return keccak256(encodedUserOpWithChainIdAndEntryPoint);

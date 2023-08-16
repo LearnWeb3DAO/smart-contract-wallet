@@ -7,7 +7,7 @@ import {IEntryPoint} from "account-abstraction/interfaces/IEntryPoint.sol";
 
 contract WalletFactoryScript is Script {
     IEntryPoint constant ENTRYPOINT =
-        IEntryPoint(0x0576a174D229E3cFA37253523E645A78A0C91B57);
+        IEntryPoint(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789);
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");

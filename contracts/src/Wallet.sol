@@ -17,14 +17,23 @@ contract Wallet is
 {
     using ECDSA for bytes32;
 
+    address public immutable walletFactory;
     IEntryPoint private immutable _entryPoint;
     address[] public owners;
 
     event WalletInitialized(IEntryPoint indexed entryPoint, address[] owners);
 
-    constructor(IEntryPoint anEntryPoint) {
+    modifier _requireFromEntryPointOrFactory() {
+        require(
+            msg.sender == address(_entryPoint) || msg.sender == walletFactory,
+            "only entry point or wallet factory can call"
+        );
+        _;
+    }
+
+    constructor(IEntryPoint anEntryPoint, address ourWalletFactory) {
         _entryPoint = anEntryPoint;
-        _disableInitializers();
+        walletFactory = ourWalletFactory;
     }
 
     function initialize(address[] memory initialOwners) public initializer {
@@ -35,8 +44,7 @@ contract Wallet is
         address dest,
         uint256 value,
         bytes calldata func
-    ) external {
-        _requireFromEntryPoint();
+    ) external _requireFromEntryPointOrFactory {
         _call(dest, value, func);
     }
 
@@ -44,8 +52,7 @@ contract Wallet is
         address[] calldata dests,
         uint256[] calldata values,
         bytes[] calldata funcs
-    ) external {
-        _requireFromEntryPoint();
+    ) external _requireFromEntryPointOrFactory {
         require(dests.length == funcs.length, "wrong array lengths");
         require(values.length == funcs.length, "wrong values lengths");
         for (uint256 i = 0; i < dests.length; i++) {
@@ -69,9 +76,9 @@ contract Wallet is
     }
 
     function _initialize(address[] memory initialOwners) internal {
-        require(owners.length > 0, "no owners");
+        require(initialOwners.length > 0, "no owners");
         owners = initialOwners;
-        emit WalletInitialized(_entryPoint, owners);
+        emit WalletInitialized(_entryPoint, initialOwners);
     }
 
     function _call(address target, uint256 value, bytes memory data) internal {
@@ -101,9 +108,9 @@ contract Wallet is
         entryPoint().depositTo{value: msg.value}(address(this));
     }
 
-    function _authorizeUpgrade(address) internal view override {
-        _requireFromEntryPoint();
-    }
+    function _authorizeUpgrade(
+        address
+    ) internal view override _requireFromEntryPointOrFactory {}
 
     receive() external payable {}
 }

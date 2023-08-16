@@ -10,7 +10,7 @@ contract WalletFactory {
     Wallet public immutable walletImplementation;
 
     constructor(IEntryPoint entryPoint) {
-        walletImplementation = new Wallet(entryPoint);
+        walletImplementation = new Wallet(entryPoint, address(this));
     }
 
     function createAccount(

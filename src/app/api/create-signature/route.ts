@@ -3,21 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddress, userOp, signerAddress, signature } =
-      await req.json();
+    const { signature, signerAddress, transactionId } = await req.json();
 
-    const wallet = await prisma.wallet.findUnique({
+    await prisma.transaction.update({
       where: {
-        address: walletAddress,
+        id: transactionId,
       },
-    });
-
-    if (!wallet) throw new Error("Invalid walletAddress");
-
-    await prisma.transaction.create({
       data: {
-        walletId: wallet.id,
-        userOp,
         signatures: {
           create: {
             signature,
