@@ -16,6 +16,7 @@ export default function WalletPage({
   const [toAddress, setToAddress] = useState("");
   const [amount, setAmount] = useState<number>(0);
   const { data: walletClient } = useWalletClient();
+  const [loading, setLoading] = useState(false);
 
   const fetchUserOp = async () => {
     try {
@@ -40,16 +41,19 @@ export default function WalletPage({
 
       return userOp;
     } catch (e: any) {
+      window.alert(e.message);
       throw new Error(e.message);
     }
   };
 
   const createTransaction = async () => {
     try {
+      setLoading(true);
       if (!userAddress) return;
-      const userOp = await fetchUserOp();
 
+      const userOp = await fetchUserOp();
       if (!userOp) throw new Error("Could not fetch userOp");
+
       const signedUserOpHash = await getUserOpHash(userOp);
       const signature = await walletClient?.signMessage({
         message: { raw: signedUserOpHash as `0x${string}` },
@@ -67,16 +71,22 @@ export default function WalletPage({
           "Content-Type": "application/json",
         },
       });
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
 
       window.alert("Transaction created!");
-    } catch (err) {
+      window.location.reload();
+    } catch (err: any) {
+      window.alert(err.message);
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-5">
       <h1 className="text-xl p-2">Wallet: {walletAddress}</h1>
@@ -98,13 +108,16 @@ export default function WalletPage({
           setAmount(parseFloat(e.target.value));
         }}
       />
-
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
-        onClick={createTransaction}
-      >
-        Create Transaction
-      </button>
+      {loading ? (
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white-1"></div>
+      ) : (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
+          onClick={createTransaction}
+        >
+          Create Transaction
+        </button>
+      )}
 
       <TransactionsList
         address={userAddress! as string}

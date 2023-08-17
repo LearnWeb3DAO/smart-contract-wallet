@@ -24,13 +24,7 @@ export async function GET(req: NextRequest) {
       include: {
         _count: {
           select: {
-            transactions: {
-              where: {
-                txHash: {
-                  not: null,
-                },
-              },
-            },
+            transactions: true,
           },
         },
       },

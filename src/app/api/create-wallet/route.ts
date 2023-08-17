@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
-import { walletFactoryContract } from "@/utils/getWalletFactoryContract";
 import { prisma } from "@/utils/db";
-import { BigNumber } from "ethers";
+import { walletFactoryContract } from "@/utils/getWalletFactoryContract";
+import { randomBytes } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,4 +1,5 @@
 import { prisma } from "@/utils/db";
+import { isAddress } from "ethers/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -6,17 +7,15 @@ export async function POST(req: NextRequest) {
     const { walletAddress, userOp, signerAddress, signature } =
       await req.json();
 
-    const wallet = await prisma.wallet.findUnique({
-      where: {
-        address: walletAddress,
-      },
-    });
-
-    if (!wallet) throw new Error("Invalid walletAddress");
+    if (!isAddress(walletAddress)) throw new Error("Invalid walletAddress");
 
     await prisma.transaction.create({
       data: {
-        walletId: wallet.id,
+        wallet: {
+          connect: {
+            address: walletAddress,
+          },
+        },
         userOp,
         signatures: {
           create: {

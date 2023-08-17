@@ -1,4 +1,5 @@
 import { BigNumber, Contract } from "ethers";
+import { concat } from "ethers/lib/utils";
 import { Client, Presets, UserOperationBuilder } from "userop";
 import {
   BUNDLER_RPC_URL,
@@ -6,12 +7,8 @@ import {
   WALLET_FACTORY_ADDRESS,
 } from "./constants";
 import { entryPointContract } from "./getEntryPointContract";
-import {
-  RPC_URL,
-  provider,
-  walletFactoryContract,
-} from "./getWalletFactoryContract";
-import { concat, defaultAbiCoder } from "ethers/lib/utils";
+import { provider, walletFactoryContract } from "./getWalletFactoryContract";
+import { getBuilder } from "./getBuilder";
 
 export async function getUserOpForETHTransfer(
   walletAddress: string,
@@ -37,24 +34,27 @@ export async function getUserOpForETHTransfer(
       [toAddress, value, data]
     );
 
-    const builder = new UserOperationBuilder()
-      .useDefaults({
-        preVerificationGas: 60_000,
-        callGasLimit: 100_000,
-        verificationGasLimit: 2_000_000,
-      })
-      .setSender(walletAddress)
-      .setNonce(nonce)
-      .setInitCode(nonce.eq(0) ? initCode : "0x")
-      .setCallData(encodedCallData)
-      .useMiddleware(Presets.Middleware.getGasPrice(provider));
+    const builder = await getBuilder(
+      walletContract.address,
+      nonce,
+      initCode,
+      encodedCallData,
+      []
+    );
 
-    const client = await Client.init(RPC_URL);
+    builder.useMiddleware(Presets.Middleware.getGasPrice(provider));
 
-    const userOp = await client.buildUserOperation(builder);
+    const client = await Client.init(BUNDLER_RPC_URL);
+
+    await client.buildUserOperation(builder);
+
+    const userOp = builder.getOp();
 
     return userOp;
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
+    if (e instanceof Error) {
+      window.alert(e.message);
+    }
   }
 }

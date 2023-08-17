@@ -3,7 +3,6 @@ import { isAddress } from "ethers/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
-import Button from "./button";
 
 export default function CreateSCW() {
   const { address } = useAccount();
@@ -11,6 +10,7 @@ export default function CreateSCW() {
 
   const [signers, setSigners] = useState<string[]>([]);
   const lastInput = useRef<HTMLInputElement | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setSigners([address as string]);
@@ -24,6 +24,7 @@ export default function CreateSCW() {
 
   const onCreateSCW = async () => {
     try {
+      setLoading(true);
       signers.forEach((signer) => {
         if (isAddress(signer) === false) {
           throw new Error(`Invalid address: ${signer}`);
@@ -37,6 +38,7 @@ export default function CreateSCW() {
           "Content-Type": "application/json",
         },
       });
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
@@ -48,6 +50,8 @@ export default function CreateSCW() {
       if (error instanceof Error) {
         window.alert(error.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,8 +87,16 @@ export default function CreateSCW() {
           }}
         />
       ))}
-
-      <Button onClick={onCreateSCW}>Create New Wallet</Button>
+      {loading ? (
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-l-white items-center justify-center mx-auto"></div>
+      ) : (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
+          onClick={onCreateSCW}
+        >
+          Create New Wallet
+        </button>
+      )}
     </main>
   );
 }

@@ -12,8 +12,8 @@ import { publicProvider } from "wagmi/providers/public";
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
-  appName: "My-Multisig",
-  projectId: "e3126d6134d23deaea7737ed6f4153c0",
+  appName: "scw",
+  projectId: `${process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID}`,
   chains,
 });
 
