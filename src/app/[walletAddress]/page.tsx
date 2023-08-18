@@ -88,7 +88,7 @@ export default function WalletPage({
   };
 
   return (
-    <div className="flex flex-col py-6 items-center min-h-screen gap-5">
+    <div className="flex flex-col py-6 items-center gap-5">
       <h1 className="text-5xl font-bold">Manage Wallet</h1>
       <h3 className="text-xl font-medium border-b border-gray-700">
         {walletAddress}
