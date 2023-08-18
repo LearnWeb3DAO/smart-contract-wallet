@@ -67,16 +67,13 @@ export default function WalletList({ address }: { address: string }) {
                   >
                     <Icon type="user" />
                     <p className="text-gray-300 font-mono">{signer}</p>
-                    <Button
-                      onClick={() =>
-                        window.open(
-                          `https://goerli.etherscan.io/address/${signer}`,
-                          "_blank"
-                        )
-                      }
+                    <Link
+                      href={`https://goerli.etherscan.io/address/${signer}`}
+                      target="_blank"
+                      className="text-blue-500 hover:text-blue-600"
                     >
                       Etherscan
-                    </Button>
+                    </Link>
                   </div>
                 ))}
               </div>

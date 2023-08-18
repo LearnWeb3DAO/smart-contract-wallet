@@ -19,7 +19,7 @@ export default function Home() {
           {isConnected && (
             <Link
               href="/create-wallet"
-              className="px-4 py-2 bg-blue-500 transition-colors hover:bg-blue-600 rounded-lg"
+              className="px-4 py-2 bg-blue-500 transition-colors hover:bg-blue-600 rounded-lg font-bold"
             >
               Create New Wallet
             </Link>
