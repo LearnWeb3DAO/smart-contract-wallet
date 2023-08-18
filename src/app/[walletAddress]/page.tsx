@@ -55,6 +55,7 @@ export default function WalletPage({
       if (!userOp) throw new Error("Could not fetch userOp");
 
       const signedUserOpHash = await getUserOpHash(userOp);
+      console.log("I came here");
       const signature = await walletClient?.signMessage({
         message: { raw: signedUserOpHash as `0x${string}` },
       });
@@ -77,7 +78,9 @@ export default function WalletPage({
         throw new Error(data.error);
       }
 
-      window.alert("Transaction created!");
+      window.alert(
+        "Transaction created and signed! Please ask other owners to sign to finally execute the transaction"
+      );
       window.location.reload();
     } catch (err: any) {
       window.alert(err.message);

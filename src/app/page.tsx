@@ -2,12 +2,18 @@
 
 import WalletList from "@/components/walletList";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
+  const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
   return (
     <main className="flex flex-col h-screen">
       <div className="flex flex-col h-full gap-6 justify-center items-center">

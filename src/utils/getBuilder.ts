@@ -7,22 +7,25 @@ export async function getBuilder(
   nonce: BigNumber,
   initCode: Uint8Array,
   encodedCallData: string,
-  signatures: string[]
+  signatures: string[],
+  isDeployed?: boolean
 ) {
   try {
     const encodedSignatures = defaultAbiCoder.encode(["bytes[]"], [signatures]);
     const builder = new UserOperationBuilder()
       .useDefaults({
-        preVerificationGas: 60_000,
+        preVerificationGas: 100_000,
         callGasLimit: 100_000,
         verificationGasLimit: 2_000_000,
       })
       .setSender(walletContract)
       .setNonce(nonce)
-      .setInitCode(nonce.eq(0) ? initCode : "0x")
       .setCallData(encodedCallData)
       .setSignature(encodedSignatures);
-
+    console.log(`isDeployed: ${isDeployed}`);
+    if (!isDeployed) {
+      builder.setInitCode(initCode);
+    }
     return builder;
   } catch (e) {
     console.error(e);

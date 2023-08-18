@@ -1,4 +1,4 @@
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, Contract, providers } from "ethers";
 import { concat } from "ethers/lib/utils";
 import { Client, Presets, UserOperationBuilder } from "userop";
 import {
@@ -6,7 +6,7 @@ import {
   WALLET_ABI,
   WALLET_FACTORY_ADDRESS,
 } from "./constants";
-import { entryPointContract } from "./getEntryPointContract";
+import { bundlerProvider, entryPointContract } from "./getEntryPointContract";
 import { provider, walletFactoryContract } from "./getWalletFactoryContract";
 import { getBuilder } from "./getBuilder";
 
@@ -18,7 +18,11 @@ export async function getUserOpForETHTransfer(
   value: BigNumber
 ) {
   try {
-    const walletContract = new Contract(walletAddress, WALLET_ABI, provider);
+    const walletContract = new Contract(
+      walletAddress,
+      WALLET_ABI,
+      bundlerProvider
+    );
 
     const data = walletFactoryContract.interface.encodeFunctionData(
       "createAccount",
