@@ -3,6 +3,8 @@ import { isAddress } from "ethers/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import Icon from "./icon";
+import Button from "./button";
 
 export default function CreateSCW() {
   const { address } = useAccount();
@@ -21,6 +23,20 @@ export default function CreateSCW() {
       lastInput.current.focus();
     }
   }, [signers]);
+
+  function addNewSigner() {
+    setSigners((signers) => [...signers, ""]);
+  }
+
+  function removeSigner(index: number) {
+    if (signers[index] === undefined) return;
+    if (signers[index].length > 0) return;
+    if (signers.length <= 1) return;
+
+    const newSigners = [...signers];
+    newSigners.splice(index, 1);
+    setSigners(newSigners);
+  }
 
   const onCreateSCW = async () => {
     try {
@@ -58,44 +74,44 @@ export default function CreateSCW() {
   return (
     <main className="flex flex-col gap-6 max-w-sm w-full">
       {signers.map((signer, index) => (
-        <input
-          key={index}
-          type="text"
-          className=" rounded-lg p-2 w-full text-slate-700"
-          placeholder="0x000"
-          value={signer}
-          ref={index === signers.length - 1 ? lastInput : null}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
+        <div key={signer} className="flex items-center gap-4">
+          <input
+            type="text"
+            className="rounded-lg p-2 w-full text-slate-700"
+            placeholder="0x000"
+            value={signer}
+            ref={index === signers.length - 1 ? lastInput : null}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                addNewSigner();
+              } else if (event.key === "Backspace") {
+                removeSigner(index);
+              }
+            }}
+            onChange={(event) => {
               const newSigners = [...signers];
-              newSigners.push(``);
+              newSigners[index] = event.target.value;
               setSigners(newSigners);
-            } else if (
-              event.key === "Backspace" &&
-              signer === `` &&
-              signers.length > 1
-            ) {
-              const newSigners = [...signers];
-              newSigners.splice(index, 1);
-              setSigners(newSigners);
-            }
-          }}
-          onChange={(event) => {
-            const newSigners = [...signers];
-            newSigners[index] = event.target.value;
-            setSigners(newSigners);
-          }}
-        />
+            }}
+          />
+
+          {index > 0 && (
+            <div
+              className="hover:scale-105 cursor-pointer"
+              onClick={() => removeSigner(index)}
+            >
+              <Icon type="xmark" />
+            </div>
+          )}
+        </div>
       ))}
       {loading ? (
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-l-white items-center justify-center mx-auto"></div>
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-l-white items-center justify-center mx-auto" />
       ) : (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
-          onClick={onCreateSCW}
-        >
-          Create New Wallet
-        </button>
+        <div className="flex items-center justify-between">
+          <Button onClick={addNewSigner}>Add New Signer</Button>
+          <Button onClick={onCreateSCW}>Create New Wallet</Button>
+        </div>
       )}
     </main>
   );

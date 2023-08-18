@@ -4,9 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { walletId, transactionId, txHash } = await req.json();
-    console.log(`walletId: ${walletId}`);
-    console.log(`transactionId: ${transactionId}`);
-    console.log(`txHash: ${txHash}`);
     await prisma.wallet.update({
       where: {
         id: walletId,

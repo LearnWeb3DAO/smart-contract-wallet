@@ -1,23 +1,21 @@
 import { prisma } from "@/utils/db";
 import { isAddress } from "ethers/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
+import { Transaction, TransactionSignature, Wallet } from "@prisma/client";
+
+export type TransactionWithSignatures = Transaction & {
+  signatures: TransactionSignature[];
+  wallet: Wallet;
+  pendingSigners: string[];
+};
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const userAddress = searchParams.get("userAddress");
     const walletAddress = searchParams.get("walletAddress");
 
     if (!walletAddress) {
       throw new Error("Missing or invalid wallet address");
-    }
-
-    if (!userAddress) {
-      throw new Error("Missing or invalid address");
-    }
-
-    if (!isAddress(userAddress)) {
-      throw new Error("Invalid Ethereum address");
     }
 
     if (!isAddress(walletAddress)) {
@@ -27,9 +25,6 @@ export async function GET(req: NextRequest) {
     const transactions = await prisma.transaction.findMany({
       where: {
         wallet: {
-          signers: {
-            hasEvery: [userAddress.toLowerCase()],
-          },
           address: walletAddress,
         },
       },
@@ -37,9 +32,31 @@ export async function GET(req: NextRequest) {
         signatures: true,
         wallet: true,
       },
+      orderBy: {
+        txHash: {
+          sort: "asc",
+          nulls: "first",
+        },
+      },
     });
 
-    return NextResponse.json({ transactions });
+    const augmentedTransactions: TransactionWithSignatures[] = transactions.map(
+      (transaction) => {
+        const pendingSigners = transaction.wallet.signers.filter(
+          (signer) =>
+            !transaction.signatures.find(
+              (signature) => signature.signerAddress === signer
+            )
+        );
+
+        return {
+          ...transaction,
+          pendingSigners,
+        };
+      }
+    );
+
+    return NextResponse.json({ transactions: augmentedTransactions });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error });

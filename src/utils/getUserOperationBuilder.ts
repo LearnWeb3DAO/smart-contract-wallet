@@ -2,13 +2,12 @@ import { BigNumber } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import { UserOperationBuilder } from "userop";
 
-export async function getBuilder(
+export async function getUserOperationBuilder(
   walletContract: string,
   nonce: BigNumber,
   initCode: Uint8Array,
   encodedCallData: string,
-  signatures: string[],
-  isDeployed?: boolean
+  signatures: string[]
 ) {
   try {
     const encodedSignatures = defaultAbiCoder.encode(["bytes[]"], [signatures]);
@@ -21,11 +20,9 @@ export async function getBuilder(
       .setSender(walletContract)
       .setNonce(nonce)
       .setCallData(encodedCallData)
-      .setSignature(encodedSignatures);
-    console.log(`isDeployed: ${isDeployed}`);
-    if (!isDeployed) {
-      builder.setInitCode(initCode);
-    }
+      .setSignature(encodedSignatures)
+      .setInitCode(initCode);
+
     return builder;
   } catch (e) {
     console.error(e);
