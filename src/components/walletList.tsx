@@ -31,54 +31,56 @@ export default function WalletList({ address }: { address: string }) {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {wallets.map((wallet) => (
-            <div
-              key={wallet.id}
-              className="flex flex-col border border-gray-800 rounded-lg"
-            >
-              <Link
-                className="text-gray-300 font-medium"
-                href={`/${wallet.address}`}
+          {wallets.length > 0 &&
+            wallets.map((wallet) => (
+              <div
+                key={wallet.id}
+                className="flex flex-col border border-gray-800 rounded-lg"
               >
-                <div className="bg-gray-800 flex justify-between gap-4 items-center rounded-t-lg p-2 font-mono">
-                  {wallet.address}
-                  <p className="text-gray-300">
-                    Pending Txns: {wallet._count.transactions}
-                  </p>
-                  <div className="bg-gray-300 rounded-full items-center px-2 py-1 flex gap-2">
-                    {wallet.isDeployed ? (
-                      <div className="h-2 w-2 rounded-full bg-green-400" />
-                    ) : (
-                      <div className="h-2 w-2 rounded-full bg-red-500" />
-                    )}
-
-                    <p className="text-gray-800 text-sm font-medium">
-                      {wallet.isDeployed ? "Deployed" : "Not Deployed"}
+                <Link
+                  className="text-gray-300 font-medium"
+                  href={`/${wallet.address}`}
+                >
+                  <div className="bg-gray-800 flex justify-between gap-4 items-center rounded-t-lg p-2 font-mono">
+                    {wallet.address}
+                    <p className="text-gray-300">
+                      Pending Txns: {wallet._count.transactions}
                     </p>
-                  </div>
-                </div>
-              </Link>
+                    <div className="bg-gray-300 rounded-full items-center px-2 py-1 flex gap-2">
+                      {wallet.isDeployed ? (
+                        <div className="h-2 w-2 rounded-full bg-green-400" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-red-500" />
+                      )}
 
-              <div className="flex flex-col py-2 divide-y divide-gray-600">
-                {wallet.signers.map((signer, idx) => (
-                  <div
-                    key={`${wallet.address}-${signer}`}
-                    className="px-4 flex items-center justify-center gap-2 py-2"
-                  >
-                    <Icon type="user" />
-                    <p className="text-gray-300 font-mono">{signer}</p>
-                    <Link
-                      href={`https://goerli.etherscan.io/address/${signer}`}
-                      target="_blank"
-                      className="text-blue-500 hover:text-blue-600"
-                    >
-                      Etherscan
-                    </Link>
+                      <p className="text-gray-800 text-sm font-medium">
+                        {wallet.isDeployed ? "Deployed" : "Not Deployed"}
+                      </p>
+                    </div>
                   </div>
-                ))}
+                </Link>
+
+                <div className="flex flex-col py-2 divide-y divide-gray-600">
+                  {wallet.signers.length > 0 &&
+                    wallet.signers.map((signer, idx) => (
+                      <div
+                        key={`${wallet.address}-${signer}`}
+                        className="px-4 flex items-center justify-center gap-2 py-2"
+                      >
+                        <Icon type="user" />
+                        <p className="text-gray-300 font-mono">{signer}</p>
+                        <Link
+                          href={`https://goerli.etherscan.io/address/${signer}`}
+                          target="_blank"
+                          className="text-blue-500 hover:text-blue-600"
+                        >
+                          Etherscan
+                        </Link>
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </main>
