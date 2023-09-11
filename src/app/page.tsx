@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const { isConnected, address } = useAccount();
   const isMounted = useIsMounted();
