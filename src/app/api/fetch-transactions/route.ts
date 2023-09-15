@@ -3,6 +3,7 @@ import { isAddress } from "ethers/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 import { Transaction, TransactionSignature, Wallet } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
 export type TransactionWithSignatures = Transaction & {
   signatures: TransactionSignature[];
   wallet: Wallet;
