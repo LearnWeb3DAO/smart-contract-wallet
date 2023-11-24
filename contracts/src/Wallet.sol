@@ -7,6 +7,7 @@ import {UserOperation} from "account-abstraction/interfaces/UserOperation.sol";
 import {TokenCallbackHandler} from "account-abstraction/samples/callback/TokenCallbackHandler.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract Wallet is
@@ -16,6 +17,7 @@ contract Wallet is
     UUPSUpgradeable
 {
     using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
 
     address public immutable walletFactory;
     IEntryPoint private immutable _entryPoint;
